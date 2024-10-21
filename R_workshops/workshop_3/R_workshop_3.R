@@ -318,14 +318,6 @@ ggplot(data, aes(x=age, y=income/1000, size = journey_time/60, color = gender)) 
   scale_size(range = c(1, 20), name="Journey time (hours)") +
   ylim(20,200)
 
-## If we want to plot a regression line, we have to change our commands a little, to avoid one geom cancelling the other
-
-ggplot(data) +
-  geom_point(aes(x=age, y=income/1000, size = journey_time/60, color = gender), alpha=0.5) +
-  stat_smooth(aes(x=age, y=income/1000, color = gender), method = "lm") +
-  scale_size(range = c(1, 20), name="Journey time (hours)") +
-  ylim(20,200)
-
 ## Scatterplots with many points can be difficult to understand due to the overlap of points. One way to deal with this is to use a 2D-density scatterploit, 
 ## which instead of showing the points, created bins and colors the bins according to the number of points on it. 
 ## Let's see what happens with our previous scatterplot. We are using the geom_hex function. 

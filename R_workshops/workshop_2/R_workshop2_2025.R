@@ -1,0 +1,240 @@
+
+## "R for absolute begginers 2: Data Wrangling"
+
+## As a quick recap, on the last workshop we learned:
+## - what are variables and their types;
+## - different properties of variable types;
+## - what are vectors;
+## - how can we filter and subset vectors;
+## - the existence of data frames.
+
+# Today, we will start to approach data wrangling on R. Data wrangling is nothing more than getting raw data into a more usable format, ready 
+# for analysis. It can also go by data cleaning, or remediation. Data wrangling will vary depending on your data and your goals for that data, 
+# but usually it involves dealing with missing values and duplicate values, merging data sources, filtering out unecessary data and dealing 
+# with outliers. 
+
+# R is powerful for data wrangling due to its facility of dealing with data tables, enabled by the data frame variable type. 
+# This is because most data comes in a tabular (table) format.  
+
+# The dataset we'll use here was sourced from ICSPR (https://www.icpsr.umich.edu/web/ICPSR/studies/30943#). 
+# This dataset contains data from the New Orleans portion of the American Housing Survey, 2009. 
+# The survey has several parts that are summarized in eight data files, with their respective codebooks.
+
+# First let's set our working directory. We can do that using the menu (Session > Set working directory > Choose directory), 
+# or by running the command below. Make sure to set the path to the directory you select.
+
+setwd("C:/Users/cms1422/OneDrive - Mississippi State University/Desktop")
+
+# Now we can load the data. Here, we will focus on two of the eight datafiles, the first contains details about journey to work (Part 2)
+# and the second has demographic data from the participant households (Part 6). 
+# All files in this dataset contain a column called "CONTROL", which is the variable that links through all the files. 
+# THIS IS AN IMPORTANT FEATURE!
+
+# The data format is .tsv (tab-separated values). This is a text format that stores tables using tabs as separator. 
+# It is a cousin of the more commonly used comma-separated value (csv). 
+# We can read this data in two ways, either using "read.table" or "read.csv".
+
+# note that we are using the option "sep" to indicate what separating character the file uses (\t = tab), and we are indicating that we want to use the first row of the table as headers
+demo <- read.csv("30943-0006-Data.tsv", sep = "\t", header = TRUE)
+journey <- read.table("30943-0002-Data.tsv", sep = "\t", header = TRUE)
+
+# You can check our new data frames by clicking on them on the environment interface or using the command below:
+print(demo)
+print(journey)
+
+
+# How many variables do we have in each file? A lot, right? Frequently, we don't need all the variables in a file all at the same time. 
+# Subsetting data frames to grab only some columns is one of the most common tasks in data wrangling. 
+# Here, we will create two new data frames with just some of the columns. 
+
+# From the "journey" dataset, we'll grab the variables about transportation mode, journey time and journey distance. We also need the CONTROL variable.
+# We need to check the codebook to see how these variables are named and coded. Note the use of the "data.frame" function here. 
+
+journey.reduced <- data.frame(journey$CONTROL, journey$TRAN, journey$TIMEJ, journey$DISTJ)
+
+# We can easily change the variable names in the headers to make it easier on us. Note the use of the function head here. What do you think it does?
+
+colnames(journey.reduced) <- c("CONTROL", "transport_mode", "journey_time", "journey_distance")
+head(journey.reduced)
+
+# Let's do the same with the other table. We are grabbing the variables relating to gender, age, and income. And of course, the CONTROL variable. 
+
+demo.reduced <- data.frame(demo$CONTROL, demo$SEX, demo$SAL, demo$AGE)
+colnames(demo.reduced) <- c("CONTROL", "gender", "income", "age")
+head(demo.reduced)
+
+# Another common data wrangling task is merging different data tables. 
+# R makes it easier with the function "merge". By default, the function will look for columns with the same name, 
+# but the merging column can be defined using "by":
+
+combined <- merge(demo.reduced, journey.reduced, by = "CONTROL")
+head(combined)
+
+# Despite looking simple, merging can be actually complex. 
+# There are four types of merging or joining (and this extends to other programming languages, like python), which are:
+
+# - left merge: includes all rows from the first dataset and matching rows from the second. 
+# - right merge: includes all rows from the second dataset and matching rows from the first. 
+# - inner merge: includes only rows with matching keys in both datasets. 
+# - outer merge: includes all rows from both datasets.
+
+# The default version of merge "merge(X,Y)" corresponds to a inner join. 
+# To change the type of join we need to use an extra argument "all". 
+# X corresponds to the data frame on the left and Y to the one on the right:
+
+# left join:
+combined.left <- merge(demo.reduced, journey.reduced, by = "CONTROL", all.x = TRUE)
+
+# right join:
+combined.right <- merge(demo.reduced, journey.reduced, by = "CONTROL", all.y = TRUE)
+
+# outer join:
+combined.outer <- merge(demo.reduced, journey.reduced, by = "CONTROL", all = TRUE)
+
+
+# We will keep our original "combined" object. To avoid confusion, let's remove the extra objects we created:
+
+remove(combined.left)
+remove(combined.outer, combined.right)
+
+# If we take a better look at our combined dataframe, we'll see that there are rows that contain exactly the same values. 
+# Usually duplicated rows can be removed from datasets before data analysis. 
+# There are many ways to do that using R, and here we will focus on the funtion "distinct", which is part of a package called dplyr. 
+# So first we need to load it.
+
+# install package:
+install.packages("dplyr")
+
+# load package
+library(dplyr)
+
+# remove all duplicated rows:
+combined.clean <- distinct(combined)
+
+# Cool, we dropped about 500 duplicated rows. We might decide to clean this dataset even further. 
+# To do this, we need to understand our data (and this is a valuable lesson for any dataset). 
+# The American Housing Survey collects information about every person living in a household, 
+# and when a household has more than one person, multiple lines are added, one for each person, with the same CONTROL number.
+
+# First, let's remove duplicated values based on the CONTROL column, keeping only one row per CONTROL value.
+# Note the use of the option ".keep_all", which is needed to keep all columns.
+combined.onecontrol <- distinct(combined.clean, CONTROL, .keep_all = TRUE)
+
+# Looking at our new clean table now, we see we removed more than 6000 rows. 
+
+# Now it would be a good moment to remove outliers and resolve missing values. 
+# There are different options here, and it will depend a lot on your goals for your study. 
+# Some types of statistical analysis do not allow NA (= missing) values or ignore them during calculation. 
+# If we are interested in a specific variable on the dataset and it has NA values, it might be better to simply remove the rows that have these values.
+
+# First, we should take a look at our table to understand better what's going on.
+
+# The command structure shows us basic information about the table, such as the name of the columns, the type of character, etc:
+str(combined.onecontrol)
+
+# The command summary shows basic statistics about each column in the table:
+summary(combined.onecontrol)
+
+# Note that one of our columns have NA values. Let's remove those rows. 
+# We will use the function na.omit. Note that we are not saving a new object, we are just updating the current object. 
+
+combined.onecontrol <- na.omit(combined.onecontrol)
+
+
+# Let's summarize the table again:
+
+summary(combined.onecontrol)
+
+
+# If we look in the journey time and distance variables, we note a suspiciously high maximum value of 996. 
+# These could be either a typo, a coding error or something else. Let's take a look on the rows that contain these values:
+
+head(combined.onecontrol[combined.onecontrol$journey_time == '996',])
+
+# We notice here that all the rows with these values also contain the value "12" for transport_mode. Let's look at the code book what this means. 
+
+# So, now we know that this exaggerated distance and time were imputed because the inhabitant does not travel to work at all. 
+# Instead of having this numeric values that can confound our analyses, we can replace these values with NA. 
+# Here, we are using a conditional function that allows us to select specific values.
+
+combined.onecontrol$journey_time <- ifelse(combined.onecontrol$journey_time==996, NA, combined.onecontrol$journey_time)
+combined.onecontrol$journey_distance <- ifelse(combined.onecontrol$journey_distance==996, NA, combined.onecontrol$journey_distance)
+summary(combined.onecontrol)
+
+# We see that the maximum values for the two journey variables have changed, and now we have some NA values. 
+
+# Let's take a better look at two other variables now, transport_mode and gender. 
+# By using the str function, we know they are integers, coded with numbers. 
+# If we look in the codebook, we find that each number corresponds to a different category. 
+# These are categorical variables, not numeric. While we can keep them as numbers on the data table, 
+# this can have consequences in how some statistical analysis work. 
+# We can easily change the class of these variables to factors instead of integers, and replace the numbers by descriptive levels. 
+
+
+# Here we are changing the class of the variable to factor, which corresponds to a categorical variable
+combined.onecontrol$gender <- as.factor(combined.onecontrol$gender)
+class(combined.onecontrol$gender)
+
+# Then we use the levels variable to replace the name of each level
+# Note that we need to provide the new values on the order that they appear. Here 1 = male and 2 = female, so that's the order.
+levels(combined.onecontrol$gender) <- c('male', 'female')
+
+head(combined.onecontrol)
+
+# Let's do the same for the transport method variable.
+
+# First change the class of the variable:
+combined.onecontrol$transport_mode <- 
+  
+# Now change the name of the levels.
+# These are the categories in order: "Car", "Truck", "Van", "Bus_Streetcar", "Subway", "Railroad", "Taxicab", "Motorcycle", 
+  # "Bicycle", "Other","Walked", "Works_home"
+levels( ) <- 
+  
+head( )
+
+
+# Sometimes having factors with a lot of levels can be burdensome in an analysis. 
+# We might want to combine some levels into wider categories. 
+# Let's recode our levels so they are in three categories: Personal_vehicle, Public_transit and Other. We can do that with the "levels" function:
+
+# First we create a new column by copying the values of the transport_mode column:
+combined.onecontrol$transport_wide <- combined.onecontrol$transport_mode
+
+# Then we change the level names on the order that they appear:
+levels(combined.onecontrol$transport_wide) <- c("Personal_vehicle", "Personal_vehicle", "Personal_vehicle", 
+                                                "Public_transit", "Public_transit", "Public_transit", "Public_transit", "Personal_vehicle", 
+                                                "Other", "Other","Other", "Other")
+
+summary(combined.onecontrol$transport_wide)
+
+
+# We might want to create a calculated field in our dataset. For example, we might want to know the percentage of time 
+# a day a person spends commuting to work. We can easily calculate that in R:
+  
+# First, we create a new column ad feed it with the values we want to start with:
+combined.onecontrol$percent_time <- combined.onecontrol$journey_time
+
+# Now, we calculate the value and re-feed it into the variable (1440 is the number of minutes in a day, as the journey_time variable is coded in minutes)
+combined.onecontrol$percent_time <- (combined.onecontrol$percent_time * 100) / 1440
+
+# we could also do all this in a single step:
+combined.onecontrol$percent_time <- (combined.onecontrol$journey_time * 100) / 1440
+
+summary(combined.onecontrol$percent_time)
+
+
+# Finally, we can save our new, clean and treated data table as a csv file, so we can start more quickly next time:
+write.csv(combined.onecontrol, "AHS2009_combined_clean.csv")
+
+
+
+
+
+
+
+
+
+
+
+

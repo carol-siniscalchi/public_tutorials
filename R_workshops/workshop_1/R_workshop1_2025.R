@@ -21,6 +21,8 @@
 ## your new project. Note that the path (the address of where the project lives in your computer) appears at the top of the Files interface. Click in the symbol to create a new script. 
 ## The Script interface should appear on the top left corner.
 
+## Welcome new 2025 class! 
+  
 #### Coding ####
 
 # Before we actually start coding, let's establish an important ground rule: **always comment your code!**

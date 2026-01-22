@@ -22,7 +22,7 @@ ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
 # we can change the color and size of the points by adding parameters to geom_point
 
 ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
-  geom_point(color = "forestgreen", size = 4)
+  geom_point(color = "firebrick", size = 4)
 
 # we can also change point shape, calling them by either name or number (see full list here: https://ggplot2.tidyverse.org/articles/ggplot2-specs.html?q=point%20shape#sec:shape-spec)
 
@@ -42,8 +42,9 @@ ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
 
 ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
   geom_point(size = 3) + 
-  scale_color_manual(values = c("deeppink", "goldenrod", "tomato2")) + 
-  theme_light()
+  scale_color_manual(values = c("deeppink", "goldenrod", "tomato2")) +
+  theme_classic()
+
 
 # We can change the text on the axis labels by adding a new layer
 
@@ -51,7 +52,7 @@ ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
   geom_point(size = 3) + 
   scale_color_manual(values = c("deeppink", "goldenrod", "tomato2")) + 
   theme_light() +
-  labs(title = "Sepal dimentions", x = "Sepal length (mm)", y = "Sepal width (mm)")
+  labs(title = "Sepal dimentions", x = "Sepal length (mm)", y = "Sepal width (mm)", color = "Iris species")
 
 
 # ggplot allows the inclusion of more than one geometry in the same plot
@@ -73,7 +74,7 @@ ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
   scale_color_manual(values = c("deeppink", "goldenrod", "tomato2")) + 
   theme_light() +
   labs(title = "Sepal dimentions", x = "Sepal length (mm)", y = "Sepal width (mm)") +
-  geom_smooth(method = "lm", color = "black", se = FALSE)
+  geom_smooth(method = "lm", color = "black") 
 
 # another useful type of plot for continuous variables are histograms. They represent the distribution
 # of a single continuous variable
@@ -104,7 +105,7 @@ ggplot(iris, aes(x = Petal.Length, fill = Species)) +
 
 # we can add a border to the bars by adding a color parameter in our geometry
 ggplot(iris, aes(x = Petal.Length, fill = Species)) +
-  geom_histogram(color = "grey30") +
+  geom_histogram(color = "grey30", alpha = 0.5) +
   scale_fill_manual(values = cols) +
   theme_classic()
 
@@ -179,9 +180,9 @@ scatterbase +
 
 # we can save a pdf of our plot by using the pdf function
 
-pdf("scatter_rows.pdf", height = 7, width = 5)
-scatterbase +
-  facet_grid(rows = vars(Species)) +
+pdf("violin.pdf", height = 5, width = 5)
+violinbase +
+  labs(title = "Petal length by species", x = "", y = "Petal length (cm)") +
   theme(legend.position = "none")
 dev.off()
 

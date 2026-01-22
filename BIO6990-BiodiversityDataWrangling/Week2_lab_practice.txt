@@ -1,0 +1,23 @@
+You have four friends: Peter, Juan, Alice, and Mary. They are 24, 22, 23 and 24 years-old, respectively. You know that they all have pets, respectively: a dog, a cat, a goldfish, and a turtle. You want to use your new R skills to create a easy look-up of your friends, their age and their pets. 
+
+1) First, create two named vectors "pets" and "ages". Follow the name order given above.
+
+2) Now, make sure your two vectors are represented as factors. 
+
+3) Use the structure function to check what type of variable each vector is.
+
+4) Now, using index selection, check the pets in the elements with indexes 2 and 4.
+
+5) Using your friend's name, check which pet Alice has.
+
+6) You decided to add 3 more friends to the look-up: Aubrey, Sammy and Ali. You know Aubrey and Ali both have cats, but you don't know if Sammy has a pet. They are 25, 21 and 26, respectively. Add them to the respective vectors.
+
+7) Using operators, filter the friends that are 24 or older and create a new vector called "older".
+
+8) Now, using our 3 variables (friends names, pets and ages), create a data frame called "friends". Name the columns "names", "pets", and "ages".
+
+9) Using the subset function, select the friends that are older than 23 and that have a cat.
+
+10) You find out that Sammy has a dog. Using the function "replace", add the information to the right column. We did not see exactly how to perform this operation in the lab, so this will require some research.
+
+

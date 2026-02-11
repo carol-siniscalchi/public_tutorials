@@ -1,0 +1,38 @@
+Vegetable,PlantFamily,Type
+Lima beans,Fabaceae,legume
+Snap peas,Fabaceae,legume
+Beet,Amaranthaceae,root
+Broccoli,Brassicaceae,leaf
+Brussels sprout,Brassicaceae,leaf
+Cabbage,Brassicaceae,leaf
+Cantaloupe,Cucurbitaceae,fruit
+Carrot,Apiaceae,root
+Cauliflower,Brassicaceae,leaf
+Celery,Apiaceae,leaf
+Collard,Brassicaceae,leaf
+Corn,Poaceae,fruit
+Cucumber,Cucurbitaceae,fruit
+Eggplant,Solanaceae,fruit
+Endive,Asteraceae,leaf
+Kale,Brassicaceae,leaf
+Kohlrabi,Brassicaceae,root
+Lettuce,Asteraceae,leaf
+Melon,Cucurbitaceae,fruit
+Mustard Greens,Brassicaceae,leaf
+Okra,Malvaceae,fruit
+Bulbing Onion,Alliaceae,root
+Bunching Onion,Alliaceae,root
+Parsnip,Apiaceae,root
+Pea,Fabaceae,legume
+Pepper,Solanaceae,fruit
+Pumpkin,Cucurbitaceae,fruit
+Radish,Brassicaceae,root
+Rutabaga,Brassicaceae,root
+Spinach,Amaranthaceae,leaf
+New Zealand Spinach ,Aizoaceae,leaf
+Summer Squash,Cucurbitaceae,fruit
+Winter Squash,Cucurbitaceae,fruit
+Swiss Chard,Amaranthaceae,leaf
+Tomato,Solanaceae,fruit
+Turnip,Brassicaceae,root
+Watermelon,Cucurbitaceae,fruit

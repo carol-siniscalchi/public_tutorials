@@ -2,4 +2,6 @@
 
 - **Quick_Census_data_guide.pdf:**  short guide on how to use the [IPUMS](https://usa.ipums.org/usa) and [data.census.gov](https://data.census.gov/) online data analysis tools to make quick comparisons and graphs.
 - **Intro_Power_BI:** introductory tutorial on how to use Power BI for data visualization. The data is sourced from [ICPSR](https://doi.org/10.3886/ICPSR30943.v1) (American Housing Survey 2009 - New Orleans). A pdf tutorial is included, as well as a final pbix file and all data files and codebooks.
-- **R_workshops:** series of three introductory workshops on using R. Files are R notebooks. 
+- **R_workshops:** series of three introductory workshops on using R. Files are R notebooks.
+- **BIO6990-BiodiversityDataWrangling:** materials from the Spring 2026 course.
+- **ggplot_dataviz:** materials from data visualization workshop taught at MSU Librarues. 

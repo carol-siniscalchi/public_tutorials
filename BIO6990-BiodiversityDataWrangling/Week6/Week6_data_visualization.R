@@ -1,0 +1,326 @@
+## Data visualization is an extensive subject, with almost infinite resources. Despite that, knowing a little bit about data visualization can be very valuable to improve our communication about our research. 
+## ggplot2 is designed to work iteratively. You start with a layer that shows the raw data. Then you add layers of annotations and statistical summaries. 
+## This allows you to produce graphics using the same structured thinking that you would use to design an analysis. 
+
+## First we install and load ggplot:
+
+install.packages("ggplot2")
+library(ggplot2)
+
+### Now let's check the dataset:
+
+str(iris)
+summary(iris)
+
+### Scatterplots ###
+
+## scatterplots require the use of the geom_point geometry
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point()
+
+# we can change the color and size of the points by adding parameters to geom_point
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point(color = "firebrick", size = 4)
+
+# we can also change point shape, calling them by either name or number (see full list here: https://ggplot2.tidyverse.org/articles/ggplot2-specs.html?q=point%20shape#sec:shape-spec)
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point(color = "purple", size = 4, shape = "triangle")
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point(color = "dodgerblue", size = 4, shape = 15)
+
+## because we have a categorical variable in the dataset, we can include more information to the plot (by coloring the points by category, for example)
+## For this, we need to include a new aesthetics, called color. 
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  geom_point()
+
+## we can change the colors by adding a scale element 
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  geom_point(size = 3) + 
+  scale_color_manual(values = c("deeppink", "goldenrod", "tomato2")) +
+  theme_classic()
+
+
+# We can change the text on the axis labels by adding a new layer
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  geom_point(size = 3) + 
+  scale_color_manual(values = c("deeppink", "goldenrod", "tomato2")) + 
+  theme_classic() +
+  labs(title = "Sepal dimentions", x = "Sepal length (mm)", y = "Sepal width (mm)", color = "Iris species")
+
+
+# ggplot allows the inclusion of more than one geometry in the same plot
+# for example, we can add a regression line to represent the relationship between variables
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  geom_point(size = 3) +   
+  scale_color_manual(values = c("deeppink", "goldenrod", "tomato2")) + 
+  theme_classic() +
+  labs(title = "Sepal dimentions", x = "Sepal length (mm)", y = "Sepal width (mm)") +
+  geom_smooth(method = "lm")
+
+# because we added the color parameter to the main aesthetics, the geom_smooth geometry inherits it
+# to add a single line, maintaining the mapping of different colors to different categories, we need to move the color parameter
+# we will also change the line color and remove the standard error "se" band
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point(aes(color = Species), size = 3) +   
+  scale_color_manual(values = c("deeppink", "goldenrod", "tomato2")) + 
+  theme_light() +
+  labs(title = "Sepal dimentions", x = "Sepal length (mm)", y = "Sepal width (mm)") +
+  geom_smooth(method = "lm", color = "black") 
+
+### Histograms ####
+
+# another useful type of plot for continuous variables are histograms. They represent the distribution
+# of a single continuous variable
+
+ggplot(iris, aes(x = Petal.Length)) +
+  geom_histogram()
+
+# this functions collates all the measures recorded in the dataset and distributes them into bins
+# the default bin size is 30, Let's try to modify it.
+
+ggplot(iris, aes(x = Petal.Length)) +
+  geom_histogram(binwidth = 0.1)
+
+ggplot(iris, aes(x = Petal.Length)) +
+  geom_histogram(binwidth = 1)
+
+# we can also color the bars by species, like we did with the scatterplot.
+
+## first, let's save the collor pallete as a variable:
+cols <- c("deeppink", "goldenrod", "tomato2")
+
+# then, we add a new parameter in our aesthetic, called "fill"
+# it has the same function as color, but works for filling larger shapes, like bars
+ggplot(iris, aes(x = Petal.Length, fill = Species)) +
+  geom_histogram() +
+  scale_fill_manual(values = cols) +
+  theme_classic()
+
+# we can add a border to the bars by adding a color parameter in our geometry
+ggplot(iris, aes(x = Petal.Length, fill = Species)) +
+  geom_histogram(color = "grey30", alpha = 0.5) +
+  scale_fill_manual(values = cols) +
+  theme_classic()
+
+### Boxplots and violin plots ###
+
+## if we are looking at distributions of continuous variables, another type of graph, the boxplot, can
+## be more useful. 
+## Boxplots summarize the shape of the distribution of the continuous variable providing summary 
+## statistics: median, first and third quartiles, and outliers.
+
+ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_boxplot() +
+  scale_fill_manual(values = cols) +
+  theme_classic()
+
+## boxplots can be difficult to interpret because they hide the real distribution of points.
+## we can add them back by including a second geometry
+
+ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_boxplot() +
+  geom_jitter(alpha = 0.5) +
+  scale_fill_manual(values = cols) +
+  theme_classic()
+
+## another way of representing the distribution of points is through a violin plot
+## the violin is wider in the areas where there are more points
+
+ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_violin() +
+  scale_fill_manual(values = cols) +
+  theme_classic()
+
+# a common strategy is to represent a boxplot inside the vionlin
+ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_violin() +
+  geom_boxplot(width=0.1, fill = "grey75", alpha = 0.7) +
+  scale_fill_manual(values = cols) +
+  theme_classic()
+
+## let's make it prettier
+
+violinbase <- ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_violin() +
+  geom_boxplot(width=0.1, fill = "grey75", alpha = 0.5) +
+  scale_fill_manual(values = cols) +
+  theme_classic()
+
+violinbase +
+  labs(title = "Petal length by species", x = "", y = "Petal length (cm)") +
+  theme(legend.position = "none")
+
+## it's easy to invert the axis
+violinbase +
+  labs(title = "Petal length by species", x = "", y = "Petal length (cm)") +
+  theme(legend.position = "none") +
+  coord_flip()
+
+#### Barplots ###
+
+# let's try to plot the simplest barplot
+ggplot(iris, aes(x = Species, fill = Species)) +
+  geom_bar() +
+  scale_fill_manual(values = cols)
+
+# Let's add a variable to the Y axis
+ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_bar() +
+  scale_fill_manual(values = cols)
+
+# Let's fix it:
+ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = cols)
+
+# Is this what we were intendind to plot?
+# How can we fix it?
+
+iris %>% 
+  group_by(Species) %>% 
+  summarise(MeanPT = mean(Petal.Length), sdPT = sd(Petal.Length))
+
+ggplot(aes(x = Species, y = MeanPT, fill = Species)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = cols)
+
+# we can add the error bar:
+iris %>% 
+  group_by(Species) %>% 
+  summarise(MeanPT = mean(Petal.Length), sdPT = sd(Petal.Length)) %>% 
+ggplot(aes(x = Species, y = MeanPT, fill = Species)) +
+  geom_bar(stat = "identity")+
+  geom_errorbar(aes(ymin = MeanPT - sdPT, ymax = MeanPT + sdPT), width = 0.2) +
+  scale_fill_manual(values = cols)
+
+### we can also plot this in a different way:
+iris %>% 
+  group_by(Species) %>% 
+  summarise(MeanPT = mean(Petal.Length), sdPT = sd(Petal.Length)) %>% 
+  ggplot(aes(x = Species, y = MeanPT, color = Species)) +
+  geom_point(size = 4)+
+  geom_errorbar(aes(ymin = MeanPT - sdPT, ymax = MeanPT + sdPT), width = 0.2) +
+  scale_color_manual(values = cols) +
+  theme(legend.position = "none")
+
+
+## Small multiples or facetting ####
+## let's go back to our scatterplot 
+scatterbase <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  geom_point(size = 3) + 
+  scale_color_manual(values = c("deeppink", "goldenrod", "tomato2")) + 
+  theme_classic()
+
+# there is a lot of overlap between the species versicolor and virginica
+# we can take care of this by using facetting, a function that allows to 
+# split a plot into smaller plots by category. There are two main functions for this
+
+# this is the facet_grid function. It can be used to split the values either by columns or rows
+scatterbase +
+  facet_grid(cols = vars(Species))
+
+scatterbase +
+  facet_grid(rows = vars(Species))
+
+# another option is to use facet_wrap. 
+# This function defines what orientation it thinks it's best for plotting.
+scatterbase +
+  facet_wrap(~Species)
+
+# we can save a pdf of our plot by using the pdf function
+
+pdf("violin.pdf", height = 5, width = 5)
+violinbase +
+  labs(title = "Petal length by species", x = "", y = "Petal length (cm)") +
+  theme(legend.position = "none")
+dev.off()
+
+# or by using the ggsave function
+ggsave("violin2.pdf", violinbase, height = 5, width = 5)
+
+# we can use a different package, called ggpubr, to make composite figures
+library(ggpubr)
+
+## first we save our plots as variables
+sc <- ggplot(iris, aes(x = Petal.Length, y = Petal.Width, color = Species)) +
+  geom_point(size = 3) + 
+  scale_color_manual(values = c("deeppink", "goldenrod", "tomato2")) + 
+  theme_classic() +
+  labs(x = "Petal length", y = "Petal width") +
+  theme(legend.position = "none")
+
+vl <- ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_violin() +
+  geom_boxplot(width=0.05, fill = "grey75", alpha = 0.5) +
+  scale_fill_manual(values = cols) +
+  theme_classic() +
+  labs(x = "", y = "Petal length") +
+  theme(legend.position = "none")
+
+ht <- ggplot(iris, aes(x = Petal.Length, fill = Species)) +
+  geom_histogram() +
+  scale_fill_manual(values = cols) +
+  theme_classic() +
+  labs(x = "Petal length", y = "") +
+  theme(legend.position = "none")
+
+bx <- ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_boxplot() +
+  geom_jitter(alpha = 0.5) +
+  scale_fill_manual(values = cols) +
+  theme_classic() +
+  labs(x = "", y = "Petal length") +
+  theme(legend.position = "none")
+
+## then we set it
+pdf("four_plots.pdf", height = 6, width = 6)
+ggarrange(ht, sc, bx, vl,
+          ncol = 2, nrow = 2, 
+          common.legend = TRUE, legend = "bottom",
+          labels="AUTO")
+dev.off()
+
+#### Practice #####
+
+# Now it's your turn! 
+# load the clean and merged data set from last week (the seed germination table with the vegetable types and plant families)
+# Use this dataframe to create the plots bellow. 
+# When you are done, send your code and pdfs of each plot to me by email.
+
+# General instructions for all plots:
+# Always add adequate titles and axis labels 
+# Keep a consistent color palette
+# Remove color legends when not needed
+# Choose a theme among the ones preset in ggplot and use it across your plots
+# Save the plots as pdf, and adjust the width and height when needed
+
+# 1) plot a scatter plot of minimum and maximum germination time. 
+#   Choose a different shape for the points
+#   Color the points by type of vegetable. Create your own color palette.
+
+# 2) Transform the scatter plot into a small multiples plot
+#    Use Plant Family to separate the small multiples
+
+# 3) Make a plot that shows the average maximum germination type of each type of vegetable
+#    Add standard deviation bars
+
+# 4) Plot a violin plot with a boxplot insert of the maximum temperature 
+#  Use plant family in the x axis. Remove plant families that don't show in the plot.
+
+# 5) Compose a single pdf with the four plots above.
+
+### This is a challenge question. Follow the steps below:
+# Create a new dataframe with only Type, MinTemp and MaxTemp
+# Melt this dataframe in a way that MinTemp and MaxTemp become categories of a single variable.
+# Create a plot using the geom_density geometry. 
+# This plot should show two curves, each with a different color, showing Min and Max Temp.
+# Separate the plot using facet_wrap, by Vegetable type.
